@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Website</title>
+    <style>
+        /* All previous CSS styles remain same */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f2f5; }
+        .container { max-width: 800px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none; }
+        .welcome-container { display: block; text-align: center; }
+        .timer { text-align: right; margin-bottom: 20px; font-weight: bold; color: #dc3545; }
+        .question { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .options { margin: 10px 0; }
+        .option label { display: block; margin: 8px 0; padding: 10px; background-color: #f8f9fa; border-radius: 5px; cursor: pointer; }
+        .option input:hover + label { background-color: #e9ecef; }
+        .option input:checked + label { background-color: #007bff; color: white; }
+        button { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        .answer-review { margin-top: 30px; text-align: left; }
+        .review-question { margin-bottom: 20px; padding: 15px; border-radius: 5px; }
+        .correct { border: 2px solid #28a745; }
+        .wrong { border: 2px solid #dc3545; }
+        .explanation { margin-top: 10px; padding: 10px; background-color: #fff3cd; border-radius: 5px; }
+        .options-review { margin: 10px 0; }
+        .option-review { padding: 8px; margin: 4px 0; border-radius: 4px; border-left: 4px solid transparent; }
+        .correct-option { border-left-color: #28a745 !important; background-color: #d4edda; }
+        .user-answer-correct { border-left-color: #28a745; background-color: #d4edda; }
+        .user-answer-wrong { border-left-color: #dc3545; background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <!-- ************************** -->
+    <!-- CONFIGURATION SECTION START -->
+    <!-- ************************** -->
+    <script>
+        // Easy-to-edit configuration
+        const examConfig = {
+            examTitle: "General Knowledge Test",
+            timeLimit: 10, // in minutes
+            questions: [
+                {
+                    question: "What is the capital of France?",
+                    options: ["London", "Berlin", "Paris", "Madrid"],
+                    answer: 2, // Index of correct answer (0-based)
+                    explanation: "Paris has been the capital of France since the 12th century."
+                },
+                {
+                    question: "Which planet is closest to the Sun?",
+                    options: ["Venus", "Mars", "Mercury", "Earth"],
+                    answer: 2,
+                    explanation: "Mercury is the smallest and closest planet to the Sun."
+                },
+                {
+                    question: "What is 5 × 5?",
+                    options: ["10", "15", "20", "25"],
+                    answer: 3,
+                    explanation: "5 multiplied by 5 equals 25."
+                }
+                // Add more questions in this format:
+                // {
+                //     question: "Your question here",
+                //     options: ["Option1", "Option2", "Option3", "Option4"],
+                //     answer: 0, // Index of correct option
+                //     explanation: "Explanation text here"
+                // },
+            ]
+        };
+    </script>
+    <!-- ************************ -->
+    <!-- CONFIGURATION SECTION END -->
+    <!-- ************************ -->
+
+    <div class="container welcome-container">
+        <h1 id="examTitle">Welcome to Online Exam</h1>
+        <p>Total Questions: <span id="totalQuestions">0</span></p>
+        <p>Time Limit: <span id="timeLimitDisplay">0</span> minutes</p>
+        <button onclick="startExam()">Start Exam</button>
+    </div>
+
+    <div class="container exam-container">
+        <div class="timer">Time Left: <span id="time">00:00</span></div>
+        <div id="questions"></div>
+        <button onclick="submitExam()">Submit Exam</button>
+    </div>
+
+    <div class="container result-container">
+        <h1>Exam Result</h1>
+        <p>Your Score: <span id="score">0</span>/<span id="totalQ">0</span></p>
+        <div class="answer-review" id="answer-review"></div>
+        <button onclick="restartExam()">Try Again</button>
+    </div>
+
+    <script>
+        // Initialize exam
+        let questions = examConfig.questions;
+        let timeLeft = examConfig.timeLimit * 60;
+        let timerId;
+
+        // Set welcome screen info
+        document.getElementById('examTitle').textContent = examConfig.examTitle;
+        document.getElementById('totalQuestions').textContent = questions.length;
+        document.getElementById('timeLimitDisplay').textContent = examConfig.timeLimit;
+        document.getElementById('totalQ').textContent = questions.length;
+
+        function startExam() {
+            document.querySelector('.welcome-container').style.display = 'none';
+            document.querySelector('.exam-container').style.display = 'block';
+            startTimer();
+            displayQuestions();
+        }
+
+        function startTimer() {
+            timerId = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time').textContent = 
+                    `${Math.floor(timeLeft/60).toString().padStart(2, '0')}:${(timeLeft%60).toString().padStart(2, '0')}`;
+                
+                if(timeLeft <= 0) submitExam();
+            }, 1000);
+        }
+
+        function displayQuestions() {
+            let questionsHTML = '';
+            questions.forEach((q, index) => {
+                questionsHTML += `
+                    <div class="question">
+                        <h3>Question ${index + 1}: ${q.question}</h3>
+                        <div class="options">
+                            ${q.options.map((option, i) => `
+                                <div class="option">
+                                    <input type="radio" name="q${index}" id="q${index}o${i}" value="${i}">
+                                    <label for="q${index}o${i}">${option}</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('questions').innerHTML = questionsHTML;
+        }
+
+        function submitExam() {
+            clearInterval(timerId);
+            let score = 0;
+            let userAnswers = [];
+            
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const userAnswer = selected ? parseInt(selected.value) : null;
+                const isCorrect = userAnswer === q.answer;
+                
+                if(isCorrect) score++;
+                
+                userAnswers.push({
+                    question: q.question,
+                    options: q.options,
+                    userAnswer: userAnswer,
+                    correctAnswer: q.answer,
+                    explanation: q.explanation,
+                    isCorrect: isCorrect
+                });
+            });
+
+            showResults(score, userAnswers);
+        }
+
+        function showResults(score, userAnswers) {
+            document.querySelector('.exam-container').style.display = 'none';
+            document.querySelector('.result-container').style.display = 'block';
+            document.getElementById('score').textContent = score;
+
+            let reviewHTML = '<h3>Answer Review:</h3>';
+            userAnswers.forEach((ans, index) => {
+                reviewHTML += `
+                    <div class="review-question ${ans.isCorrect ? 'correct' : 'wrong'}">
+                        <h4>Question ${index + 1}: ${ans.question}</h4>
+                        <div class="options-review">
+                            ${ans.options.map((option, i) => {
+                                let className = '';
+                                if(i === ans.correctAnswer) className = 'correct-option';
+                                if(i === ans.userAnswer) {
+                                    className = ans.isCorrect ? 'user-answer-correct' : 'user-answer-wrong';
+                                }
+                                return `<div class="option-review ${className}">${option}</div>`;
+                            }).join('')}
+                        </div>
+                        <div class="explanation">
+                            <strong>Explanation:</strong> ${ans.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('answer-review').innerHTML = reviewHTML;
+        }
+
+        function restartExam() {
+            timeLeft = examConfig.timeLimit * 60;
+            document.querySelectorAll('input[type="radio"]').forEach(input => input.checked = false);
+            document.querySelector('.result-container').style.display = 'none';
+            document.querySelector('.welcome-container').style.display = 'block';
+            document.getElementById('answer-review').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
