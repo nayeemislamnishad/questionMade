@@ -3,46 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Website</title>
+    <title>Exam Platform</title>
     <style>
-        /* All previous CSS styles remain same */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f2f5; }
-        .container { max-width: 800px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none; }
-        .welcome-container { display: block; text-align: center; }
-        .timer { text-align: right; margin-bottom: 20px; font-weight: bold; color: #dc3545; }
-        .question { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .options { margin: 10px 0; }
-        .option label { display: block; margin: 8px 0; padding: 10px; background-color: #f8f9fa; border-radius: 5px; cursor: pointer; }
-        .option input:hover + label { background-color: #e9ecef; }
-        .option input:checked + label { background-color: #007bff; color: white; }
-        button { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #218838; }
-        .answer-review { margin-top: 30px; text-align: left; }
-        .review-question { margin-bottom: 20px; padding: 15px; border-radius: 5px; }
-        .correct { border: 2px solid #28a745; }
-        .wrong { border: 2px solid #dc3545; }
-        .explanation { margin-top: 10px; padding: 10px; background-color: #fff3cd; border-radius: 5px; }
-        .options-review { margin: 10px 0; }
-        .option-review { padding: 8px; margin: 4px 0; border-radius: 4px; border-left: 4px solid transparent; }
-        .correct-option { border-left-color: #28a745 !important; background-color: #d4edda; }
-        .user-answer-correct { border-left-color: #28a745; background-color: #d4edda; }
-        .user-answer-wrong { border-left-color: #dc3545; background-color: #f8d7da; }
+        /* Main Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .welcome-container {
+            display: block;
+            text-align: center;
+        }
+        .timer {
+            text-align: right;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        /* Question Styles */
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .options {
+            margin: 10px 0;
+        }
+        .option label {
+            display: block;
+            margin: 8px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option input:hover + label {
+            background-color: #e9ecef;
+        }
+        .option input:checked + label {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        /* Button Styles */
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        
+        /* Result Styles */
+        .answer-review {
+            margin-top: 30px;
+            text-align: left;
+        }
+        .review-question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .correct {
+            border: 2px solid #28a745;
+        }
+        .wrong {
+            border: 2px solid #dc3545;
+        }
+        .explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border-radius: 5px;
+        }
+        .options-review {
+            margin: 10px 0;
+        }
+        .option-review {
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 4px solid transparent;
+        }
+        .correct-option {
+            border-left-color: #28a745 !important;
+            background-color: #d4edda;
+        }
+        .user-answer-correct {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .user-answer-wrong {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 10px;
+            }
+            button {
+                display: none;
+            }
+            .review-question {
+                page-break-inside: avoid;
+            }
+            .exam-container, .welcome-container {
+                display: none !important;
+            }
+            .result-container {
+                display: block !important;
+            }
+            .option-review {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- ************************** -->
-    <!-- CONFIGURATION SECTION START -->
+    <!--    EXAM CONFIGURATION      -->
     <!-- ************************** -->
     <script>
-        // Easy-to-edit configuration
         const examConfig = {
             examTitle: "General Knowledge Test",
-            timeLimit: 10, // in minutes
+            timeLimit: 10, // Minutes
             questions: [
                 {
                     question: "What is the capital of France?",
                     options: ["London", "Berlin", "Paris", "Madrid"],
-                    answer: 2, // Index of correct answer (0-based)
+                    answer: 2,
                     explanation: "Paris has been the capital of France since the 12th century."
                 },
                 {
@@ -52,27 +169,27 @@
                     explanation: "Mercury is the smallest and closest planet to the Sun."
                 },
                 {
-                    question: "What is 5 × 5?",
-                    options: ["10", "15", "20", "25"],
-                    answer: 3,
-                    explanation: "5 multiplied by 5 equals 25."
+                    question: "What is 2 + 2?",
+                    options: ["3", "4", "5", "6"],
+                    answer: 1,
+                    explanation: "Basic arithmetic sum: 2 + 2 equals 4."
                 }
                 // Add more questions in this format:
                 // {
-                //     question: "Your question here",
+                //     question: "Your Question",
                 //     options: ["Option1", "Option2", "Option3", "Option4"],
-                //     answer: 0, // Index of correct option
-                //     explanation: "Explanation text here"
+                //     answer: 0, // Correct option index (0-3)
+                //     explanation: "Explanation text"
                 // },
             ]
         };
     </script>
-    <!-- ************************ -->
-    <!-- CONFIGURATION SECTION END -->
-    <!-- ************************ -->
 
+    <!-- ************************** -->
+    <!--       HTML STRUCTURE       -->
+    <!-- ************************** -->
     <div class="container welcome-container">
-        <h1 id="examTitle">Welcome to Online Exam</h1>
+        <h1 id="examTitle">Online Exam Platform</h1>
         <p>Total Questions: <span id="totalQuestions">0</span></p>
         <p>Time Limit: <span id="timeLimitDisplay">0</span> minutes</p>
         <button onclick="startExam()">Start Exam</button>
@@ -87,22 +204,27 @@
     <div class="container result-container">
         <h1>Exam Result</h1>
         <p>Your Score: <span id="score">0</span>/<span id="totalQ">0</span></p>
-        <div class="answer-review" id="answer-review"></div>
+        <button onclick="window.print()">Print Result</button>
         <button onclick="restartExam()">Try Again</button>
+        <div class="answer-review" id="answer-review"></div>
     </div>
 
+    <!-- ************************** -->
+    <!--         JAVASCRIPT         -->
+    <!-- ************************** -->
     <script>
-        // Initialize exam
+        // Initialize Exam
         let questions = examConfig.questions;
         let timeLeft = examConfig.timeLimit * 60;
         let timerId;
 
-        // Set welcome screen info
+        // Set Initial Info
         document.getElementById('examTitle').textContent = examConfig.examTitle;
         document.getElementById('totalQuestions').textContent = questions.length;
         document.getElementById('timeLimitDisplay').textContent = examConfig.timeLimit;
         document.getElementById('totalQ').textContent = questions.length;
 
+        // Start Exam
         function startExam() {
             document.querySelector('.welcome-container').style.display = 'none';
             document.querySelector('.exam-container').style.display = 'block';
@@ -110,6 +232,7 @@
             displayQuestions();
         }
 
+        // Timer Function
         function startTimer() {
             timerId = setInterval(() => {
                 timeLeft--;
@@ -120,6 +243,7 @@
             }, 1000);
         }
 
+        // Display Questions
         function displayQuestions() {
             let questionsHTML = '';
             questions.forEach((q, index) => {
@@ -140,6 +264,7 @@
             document.getElementById('questions').innerHTML = questionsHTML;
         }
 
+        // Submit Exam
         function submitExam() {
             clearInterval(timerId);
             let score = 0;
@@ -165,12 +290,20 @@
             showResults(score, userAnswers);
         }
 
+        // Show Results
         function showResults(score, userAnswers) {
             document.querySelector('.exam-container').style.display = 'none';
             document.querySelector('.result-container').style.display = 'block';
             document.getElementById('score').textContent = score;
 
-            let reviewHTML = '<h3>Answer Review:</h3>';
+            let reviewHTML = `
+                <div class="print-header">
+                    <h2>${examConfig.examTitle}</h2>
+                    <p>Score: ${score}/${questions.length}</p>
+                    <p>Date: ${new Date().toLocaleDateString()}</p>
+                </div>
+                <h3>Answer Review:</h3>`;
+            
             userAnswers.forEach((ans, index) => {
                 reviewHTML += `
                     <div class="review-question ${ans.isCorrect ? 'correct' : 'wrong'}">
@@ -188,13 +321,13 @@
                         <div class="explanation">
                             <strong>Explanation:</strong> ${ans.explanation}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
 
             document.getElementById('answer-review').innerHTML = reviewHTML;
         }
 
+        // Restart Exam
         function restartExam() {
             timeLeft = examConfig.timeLimit * 60;
             document.querySelectorAll('input[type="radio"]').forEach(input => input.checked = false);
